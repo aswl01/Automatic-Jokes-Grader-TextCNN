@@ -1,0 +1,4 @@
+model_checkpoint_path: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-2000"
+all_model_checkpoint_paths: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-1800"
+all_model_checkpoint_paths: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-1900"
+all_model_checkpoint_paths: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-2000"

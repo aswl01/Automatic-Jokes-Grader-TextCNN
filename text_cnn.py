@@ -1,6 +1,4 @@
 import tensorflow as tf
-import numpy as np
-
 
 def get_W(shape):
     return tf.Variable(tf.truncated_normal(shape, stddev=0.1), name='W')

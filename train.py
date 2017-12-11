@@ -1,17 +1,14 @@
 import argparse
+import codecs
 import os
+import sys
+import time
 from datetime import datetime
 import tensorflow as tf
-from text_cnn import Text_CNN
-import sys
-from nltk.tokenize import RegexpTokenizer
-from nltk.stem.porter import PorterStemmer
-# import string
-import codecs
-import time
 from sklearn.cross_validation import train_test_split
-import numpy as np
 from tensorflow.contrib import learn
+from textcnn.text_cnn import Text_CNN
+from .data_utils import *
 
 
 def main(args):
@@ -19,9 +16,9 @@ def main(args):
         pretrained_model = tf.train.latest_checkpoint(args.pretrained_model)
         print('Pre-trained model: %s' % os.path.expanduser(pretrained_model))
 
-    corpus_path = 'jokes/'
-    true_label_path = 'popular_jokes.txt'
-    false_label_path = 'non_popular_jokes.txt'
+    corpus_path = '../jokes/'
+    true_label_path = '../popular_jokes.txt'
+    false_label_path = '../non_popular_jokes.txt'
     jokes = []
     max_sentence_length = 0
     labels = []
@@ -50,7 +47,7 @@ def main(args):
     jokes = np.array(list(vocab_processor.fit_transform(jokes)))
     print("sentence length = {}, voc_size = {}".format(max_sentence_length, len(vocab_processor.vocabulary_)))
 
-    x_train, x_dev, y_train, y_dev = train_test_split(jokes, labels, test_size=0.1, random_state=42)
+    x_train, x_dev, y_train, y_dev = train_test_split(jokes, labels, test_size=args.dev_sample_percentage, random_state=42)
 
     with tf.Graph().as_default():
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_memory_fraction)
@@ -58,16 +55,17 @@ def main(args):
             allow_soft_placement=True,
             log_device_placement=False,
             gpu_options=gpu_options
-            )
+        )
         sess = tf.Session(config=session_conf)
         with sess.as_default():
-            cnn = Text_CNN(sentence_length=max_sentence_length, num_classes=2, vocab_size=len(vocab_processor.vocabulary_),
+            cnn = Text_CNN(sentence_length=max_sentence_length, num_classes=2,
+                           vocab_size=len(vocab_processor.vocabulary_),
                            embedding_size=args.embedding_dim,
                            filter_sizes=list(map(int, args.filter_sizes.split(","))), num_filters=args.num_filters,
                            l2_reg_lambda=args.l2_reg_lambda)
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
-            optimizer = tf.train.AdamOptimizer(1e-3)
+            optimizer = tf.train.AdamOptimizer(1e-5)
             grads_and_vars = optimizer.compute_gradients(cnn.loss)
             train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 
@@ -151,68 +149,12 @@ def main(args):
                     print("Saved model checkpoint to {}\n".format(path))
 
 
-def preprocess(query):
-    # create English stop words list
-    # stop_words = set(stopwords.words('english'))
-    # Create p_stemmer of class PorterStemmer
-    p_stemmer = PorterStemmer()
-
-    # ascii = set(string.printable)
-    # lower cace tokens
-    tokenizer = RegexpTokenizer('\s+', gaps=True)
-    query = query.lower()
-    tokens = tokenizer.tokenize(query)
-    # only keep lowercace letter, remove numbers,punctuation, non_english word
-    filtered_tokens = []
-    for token in tokens:
-        if all(ord(c) < 128 for c in token):
-            # token = str(token).translate(None, string.punctuation)
-            #            token = token.translate(None, string.digits)
-            filtered_tokens.append(token)
-
-    # remove stop words from tokens
-    # tokens = [i for i in filtered_tokens if i not in stop_words]
-
-    # # Create wordNetLemmatizer only extract NN and NNS to improve accuracy
-    # lem = WordNetLemmatizer()
-    # # extract only noun
-    # tagged_text = nltk.pos_tag(tokens)
-    # for word, tag in tagged_text:
-    #     words.append({"word": word, "pos": tag})
-    # tokens = [lem.lemmatize(word["word"]) for word in words if word["pos"] in ["NN", "NNS"]]
-
-    # stem tokens
-    tokens = [p_stemmer.stem(token) for token in tokens]
-    tokens = " ".join(tokens)
-    return tokens
-
-
-def batch_iter(data, batch_size, num_epochs, shuffle=True):
-    """
-    Generates a batch iterator for a dataset.
-    """
-    data = np.array(data)
-    data_size = len(data)
-    num_batches_per_epoch = int((len(data) - 1) / batch_size) + 1
-    for epoch in range(num_epochs):
-        # Shuffle the data at each epoch
-        if shuffle:
-            shuffle_indices = np.random.permutation(np.arange(data_size))
-            shuffled_data = data[shuffle_indices]
-        else:
-            shuffled_data = data
-        for batch_num in range(num_batches_per_epoch):
-            start_index = batch_num * batch_size
-            end_index = min((batch_num + 1) * batch_size, data_size)
-            yield shuffled_data[start_index:end_index]
-
-
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
     # Data loading params
     parser.add_argument('--dev_sample_percentage', type=float,
-                        help='Percentage of the training data to use for validation', default=0.1)
+                        help='Percentage of the training data to use for validation', default=0.01)
     parser.add_argument('--pretrained_model', type=str,
                         help='Load a pretrained model before training starts.')
     parser.add_argument('--gpu_memory_fraction', type=float,
@@ -222,7 +164,7 @@ def parse_arguments(argv):
     parser.add_argument('--embedding_dim', type=int,
                         help='Dimensionality of character embedding (default: 128)', default=128)
     parser.add_argument('--filter_sizes', type=str,
-                        help="Comma-separated filter sizes (default: 2,3,4,5,6')", default="2, 3, 4, 5, 6")
+                        help="Comma-separated filter sizes (default: 2,3,4,5')", default="2, 3, 4, 5, 6")
     parser.add_argument('--num_filters', type=int,
                         help='Number of filters per filter size (default: 128)', default=128)
     parser.add_argument('--dropout_keep_prob', type=float,
@@ -243,8 +185,6 @@ def parse_arguments(argv):
                         help='Number of checkpoints to store (default: 3)', default=3)
     parser.add_argument('--gpu_memory_fraction', type=float,
                         help='Upper bound on the amount of GPU memory that will be used by the process.', default=1.0)
-    parser.add_argument('--seed', type=int,
-                        help='Random seed.', default=666)
     return parser.parse_args(argv)
 
 
