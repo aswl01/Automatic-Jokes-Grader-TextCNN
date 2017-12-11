@@ -1,4 +1,4 @@
-model_checkpoint_path: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-2000"
-all_model_checkpoint_paths: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-1800"
-all_model_checkpoint_paths: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-1900"
-all_model_checkpoint_paths: "/home/eecsfffbestgroup/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/runs/1513009496/checkpoints/model-2000"
+model_checkpoint_path: "D:/2017 Fall/EECS 595/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/textcnn/runs/1513009496/checkpoints/model-2000"
+all_model_checkpoint_paths: "D:/2017 Fall/EECS 595/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/textcnn/runs/1513009496/checkpoints/model-1800"
+all_model_checkpoint_paths: "D:/2017 Fall/EECS 595/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/textcnn/runs/1513009496/checkpoints/model-1900"
+all_model_checkpoint_paths: "D:/2017 Fall/EECS 595/nlp_final_proj-master-0921677fca6814804bb016057348d562bd95142c/textcnn/runs/1513009496/checkpoints/model-2000"

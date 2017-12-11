@@ -1,11 +1,12 @@
 from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import RegexpTokenizer
 import numpy as np
+from nltk.corpus import stopwords
 
 
 def preprocess(query):
     # create English stop words list
-    # stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words('english'))
     # Create p_stemmer of class PorterStemmer
     p_stemmer = PorterStemmer()
 
@@ -23,7 +24,7 @@ def preprocess(query):
             filtered_tokens.append(token)
 
     # remove stop words from tokens
-    # tokens = [i for i in filtered_tokens if i not in stop_words]
+    tokens = [i for i in filtered_tokens if i not in stop_words]
 
     # # Create wordNetLemmatizer only extract NN and NNS to improve accuracy
     # lem = WordNetLemmatizer()
