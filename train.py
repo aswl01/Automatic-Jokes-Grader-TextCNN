@@ -7,7 +7,7 @@ from datetime import datetime
 import tensorflow as tf
 from sklearn.cross_validation import train_test_split
 from tensorflow.contrib import learn
-from textcnn.text_cnn import Text_CNN
+from .text_cnn import Text_CNN
 from .data_utils import *
 
 
