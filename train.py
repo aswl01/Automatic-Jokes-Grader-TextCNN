@@ -222,7 +222,7 @@ def parse_arguments(argv):
     parser.add_argument('--embedding_dim', type=int,
                         help='Dimensionality of character embedding (default: 128)', default=128)
     parser.add_argument('--filter_sizes', type=str,
-                        help="Comma-separated filter sizes (default: 2,3,4,5')", default="2, 3, 4, 5, 6")
+                        help="Comma-separated filter sizes (default: 2,3,4,5,6')", default="2, 3, 4, 5, 6")
     parser.add_argument('--num_filters', type=int,
                         help='Number of filters per filter size (default: 128)', default=128)
     parser.add_argument('--dropout_keep_prob', type=float,
